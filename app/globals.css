@@ -1,0 +1,40 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #0a0a0f;
+  --panel: #11111a;
+  --text: #e6e6f0;
+}
+
+html, body, #__next {
+  height: 100%;
+}
+
+body {
+  background: radial-gradient(1200px 800px at 50% -20%, rgba(0,229,255,0.15), transparent),
+              radial-gradient(600px 400px at 20% 120%, rgba(155,92,255,0.15), transparent),
+              var(--bg);
+  color: var(--text);
+}
+
+.container-frost {
+  @apply bg-panel/70 backdrop-blur-md border border-white/10 rounded-2xl shadow-neon;
+}
+
+.btn-primary {
+  @apply px-4 py-2 rounded-xl bg-gradient-to-r from-neon-purple to-neon-blue text-black font-semibold shadow-neon hover:opacity-90 transition;
+}
+
+.cell {
+  @apply relative flex items-center justify-center rounded-xl border border-white/10 bg-panel/60 hover:bg-panel/80 transition;
+}
+
+.glow-ring {
+  position: absolute;
+  inset: -2px;
+  border-radius: 14px;
+  pointer-events: none;
+  box-shadow: 0 0 20px rgba(57,255,20,0.35), 0 0 40px rgba(0,229,255,0.25);
+}
