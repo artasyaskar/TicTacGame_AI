@@ -136,11 +136,11 @@ export default function HomePage() {
 
         <div className="flex items-center justify-between gap-3">
           <span className="text-white/80">{statusText}</span>
-          <div className="flex items-center gap-2">
-            <div className="hidden md:flex text-xs text-white/60">You: </div>
+          <div className="flex items-center gap-2 flex-wrap justify-end">
+            <div className="flex text-xs text-white/60 mr-1">You:</div>
             <select
               aria-label="Player mark"
-              className="px-2 py-1 rounded-lg bg-panel/80 border border-white/10 outline-none"
+              className="px-2 py-1 rounded-lg bg-panel/80 border border-white/10 outline-none min-w-[56px]"
               value={playerMark}
               onChange={(e) => onChangePlayerMark(e.target.value as Mark)}
             >
@@ -148,10 +148,10 @@ export default function HomePage() {
               <option value="O">O</option>
               <option value="✓">✓</option>
             </select>
-            <div className="hidden md:flex text-xs text-white/60">AI: </div>
+            <div className="flex text-xs text-white/60 ml-2 mr-1">AI:</div>
             <select
               aria-label="AI mark"
-              className="px-2 py-1 rounded-lg bg-panel/80 border border-white/10 outline-none"
+              className="px-2 py-1 rounded-lg bg-panel/80 border border-white/10 outline-none min-w-[56px]"
               value={aiMark}
               onChange={(e) => onChangeAiMark(e.target.value as Mark)}
             >
