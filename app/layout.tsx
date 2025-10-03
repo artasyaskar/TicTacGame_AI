@@ -3,7 +3,7 @@ import type { Metadata, Viewport } from 'next'
 
 export const metadata: Metadata = {
   title: 'Tic Tac Game AI',
-  description: 'Futuristic Tic Tac Toe with auto-cross and Gemini-powered AI',
+  description: 'A futuristic take on Tic Tac Toe with auto-cross moves and a smart AI opponent.',
 }
 
 export const viewport: Viewport = {
