@@ -131,7 +131,7 @@ export default function HomePage() {
       <div className="w-full max-w-md space-y-6">
         <div className="text-center space-y-2">
           <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight">Tic Tac Game AI</h1>
-          <p className="text-white/70">Futuristic Tic Tac Toe with Gemini-powered AI</p>
+          <p className="text-white/70">A futuristic take on Tic Tac Toe with auto-cross moves and a smart AI opponent.</p>
         </div>
 
         <div className="flex items-center justify-between gap-3">
