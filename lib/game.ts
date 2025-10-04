@@ -1,6 +1,7 @@
 export type Mark = 'X' | 'O' | '✓'
 export type Cell = Mark | null
 export type Board = Cell[] // length 9
+export type Difficulty = 'easy' | 'medium' | 'hard'
 
 export const EMPTY_BOARD: Board = Array(9).fill(null)
 
@@ -113,4 +114,31 @@ export function bestAIMove(board: Board, me: Mark, opp: Mark): number {
   const { move } = minimax(board, me, opp, me, 0, -Infinity, Infinity)
   // Fallback: pick first available (shouldn't happen)
   return move ?? availableMoves(board)[0]
+}
+
+function randomFrom<T>(arr: T[]): T {
+  return arr[Math.floor(Math.random() * arr.length)]
+}
+
+export function chooseAIMove(board: Board, me: Mark, opp: Mark, difficulty: Difficulty): number {
+  const moves = availableMoves(board)
+  if (moves.length === 0) return 0
+
+  // Always take forced win if available, regardless of difficulty
+  const winNow = tryWinOrBlock(board, me, opp)
+  if (winNow !== null) return winNow
+
+  if (difficulty === 'hard') {
+    return bestAIMove(board, me, opp)
+  }
+
+  if (difficulty === 'medium') {
+    // 50% optimal, 50% random
+    if (Math.random() < 0.5) return bestAIMove(board, me, opp)
+    return randomFrom(moves)
+  }
+
+  // easy: 70% random, 30% optimal
+  if (Math.random() < 0.7) return randomFrom(moves)
+  return bestAIMove(board, me, opp)
 }

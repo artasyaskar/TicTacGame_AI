@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server'
 import { GoogleGenerativeAI } from '@google/generative-ai'
-import { availableMoves, applyMove, formatBoard, bestAIMove, type Board, type Mark } from '@/lib/game'
+import { availableMoves, applyMove, formatBoard, bestAIMove, chooseAIMove, type Board, type Mark, type Difficulty } from '@/lib/game'
 
 export async function POST(req: Request) {
   try {
-    const { board, aiMark, playerMark }: { board: Board; aiMark: Mark; playerMark: Mark } = await req.json()
+    const { board, aiMark, playerMark, difficulty }: { board: Board; aiMark: Mark; playerMark: Mark; difficulty?: Difficulty } = await req.json()
     if (!Array.isArray(board) || board.length !== 9) {
       return NextResponse.json({ error: 'Invalid board' }, { status: 400 })
     }
@@ -24,8 +24,9 @@ export async function POST(req: Request) {
     let move: number | null = null
 
     if (backend !== 'llm') {
-      // Use local unbeatable Minimax
-      move = bestAIMove(board, aiMark, playerMark)
+      // Use local AI with difficulty control (defaults to hard)
+      const diff: Difficulty = difficulty ?? 'hard'
+      move = chooseAIMove(board, aiMark, playerMark, diff)
     } else if (orKey) {
       // Use OpenRouter
       try {

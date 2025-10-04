@@ -2,7 +2,7 @@
 import { useCallback, useMemo, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import Board from '@/components/Board'
-import { Board as TBoard, EMPTY_BOARD, Mark, applyMove, getWinner, isDraw } from '@/lib/game'
+import { Board as TBoard, EMPTY_BOARD, Mark, applyMove, getWinner, isDraw, type Difficulty } from '@/lib/game'
 
 export default function HomePage() {
   const [board, setBoard] = useState<TBoard>(EMPTY_BOARD)
@@ -13,6 +13,7 @@ export default function HomePage() {
   const [busy, setBusy] = useState(false)
   const [result, setResult] = useState<null | { winner: Mark | null; draw: boolean }>(null)
   const [showSignature, setShowSignature] = useState(false)
+  const [difficulty, setDifficulty] = useState<Difficulty>('medium')
 
   const statusText = useMemo(() => {
     if (result?.draw) return 'Draw!'
@@ -76,7 +77,7 @@ export default function HomePage() {
       const res = await fetch('/api/move', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ board: nb, aiMark, playerMark }),
+        body: JSON.stringify({ board: nb, aiMark, playerMark, difficulty }),
       })
       if (!res.ok) throw new Error('AI request failed')
       const data = await res.json()
@@ -158,6 +159,17 @@ export default function HomePage() {
               <option value="X">X</option>
               <option value="O">O</option>
               <option value="✓">✓</option>
+            </select>
+            <div className="flex text-xs text-white/60 ml-2 mr-1">Difficulty:</div>
+            <select
+              aria-label="AI difficulty"
+              className="px-2 py-1 rounded-lg bg-panel/80 border border-white/10 outline-none"
+              value={difficulty}
+              onChange={(e) => setDifficulty(e.target.value as Difficulty)}
+            >
+              <option value="easy">Easy</option>
+              <option value="medium">Medium</option>
+              <option value="hard">Hard</option>
             </select>
             <button className="btn-primary" onClick={reset}>Restart</button>
           </div>
