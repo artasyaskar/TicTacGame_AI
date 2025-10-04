@@ -120,25 +120,37 @@ function randomFrom<T>(arr: T[]): T {
   return arr[Math.floor(Math.random() * arr.length)]
 }
 
+function pickDumbMove(moves: number[]): number {
+  // Prefer edges (1,3,5,7) which are usually weaker than center/corners
+  const edges = moves.filter((m) => m === 1 || m === 3 || m === 5 || m === 7)
+  if (edges.length) return randomFrom(edges)
+  return randomFrom(moves)
+}
+
 export function chooseAIMove(board: Board, me: Mark, opp: Mark, difficulty: Difficulty): number {
   const moves = availableMoves(board)
   if (moves.length === 0) return 0
 
-  // Always take forced win if available, regardless of difficulty
-  const winNow = tryWinOrBlock(board, me, opp)
-  if (winNow !== null) return winNow
-
   if (difficulty === 'hard') {
+    // Always optimal
     return bestAIMove(board, me, opp)
   }
 
   if (difficulty === 'medium') {
-    // 50% optimal, 50% random
-    if (Math.random() < 0.5) return bestAIMove(board, me, opp)
+    // Take immediate win if available
+    const winNow = tryWinOrBlock(board, me, opp)
+    if (winNow !== null) return winNow
+    // Mostly strong, sometimes random
+    if (Math.random() < 0.75) return bestAIMove(board, me, opp)
     return randomFrom(moves)
   }
 
-  // easy: 70% random, 30% optimal
-  if (Math.random() < 0.7) return randomFrom(moves)
-  return bestAIMove(board, me, opp)
+  // EASY: often blunders; only sometimes takes optimal or immediate win
+  // 20%: take immediate win if available
+  const winChance = 0.2
+  const bestChance = 0.2 // chance to fall back to full optimal
+  const winNow = tryWinOrBlock(board, me, opp)
+  if (winNow !== null && Math.random() < winChance) return winNow
+  if (Math.random() < bestChance) return bestAIMove(board, me, opp)
+  return pickDumbMove(moves)
 }

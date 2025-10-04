@@ -137,41 +137,50 @@ export default function HomePage() {
 
         <div className="flex items-center justify-between gap-3">
           <span className="text-white/80">{statusText}</span>
-          <div className="flex items-center gap-2 flex-wrap justify-end">
-            <div className="flex text-xs text-white/60 mr-1">You:</div>
-            <select
-              aria-label="Player mark"
-              className="px-2 py-1 rounded-lg bg-panel/80 border border-white/10 outline-none min-w-[56px]"
-              value={playerMark}
-              onChange={(e) => onChangePlayerMark(e.target.value as Mark)}
-            >
-              <option value="X">X</option>
-              <option value="O">O</option>
-              <option value="✓">✓</option>
-            </select>
-            <div className="flex text-xs text-white/60 ml-2 mr-1">AI:</div>
-            <select
-              aria-label="AI mark"
-              className="px-2 py-1 rounded-lg bg-panel/80 border border-white/10 outline-none min-w-[56px]"
-              value={aiMark}
-              onChange={(e) => onChangeAiMark(e.target.value as Mark)}
-            >
-              <option value="X">X</option>
-              <option value="O">O</option>
-              <option value="✓">✓</option>
-            </select>
-            <div className="flex text-xs text-white/60 ml-2 mr-1">Difficulty:</div>
-            <select
-              aria-label="AI difficulty"
-              className="px-2 py-1 rounded-lg bg-panel/80 border border-white/10 outline-none"
-              value={difficulty}
-              onChange={(e) => setDifficulty(e.target.value as Difficulty)}
-            >
-              <option value="easy">Easy</option>
-              <option value="medium">Medium</option>
-              <option value="hard">Hard</option>
-            </select>
-            <button className="btn-primary" onClick={reset}>Restart</button>
+          <div className="flex items-center gap-x-2 gap-y-2 flex-wrap justify-end">
+            {/* You group */}
+            <div className="inline-flex items-center gap-1 shrink-0">
+              <div className="text-[11px] text-white/60">You:</div>
+              <select
+                aria-label="Player mark"
+                className="px-2 h-8 text-sm rounded-lg bg-panel/80 border border-white/10 outline-none min-w-[64px]"
+                value={playerMark}
+                onChange={(e) => onChangePlayerMark(e.target.value as Mark)}
+              >
+                <option value="X">X</option>
+                <option value="O">O</option>
+                <option value="✓">✓</option>
+              </select>
+            </div>
+            {/* AI group */}
+            <div className="inline-flex items-center gap-1 shrink-0">
+              <div className="text-[11px] text-white/60">AI:</div>
+              <select
+                aria-label="AI mark"
+                className="px-2 h-8 text-sm rounded-lg bg-panel/80 border border-white/10 outline-none min-w-[64px]"
+                value={aiMark}
+                onChange={(e) => onChangeAiMark(e.target.value as Mark)}
+              >
+                <option value="X">X</option>
+                <option value="O">O</option>
+                <option value="✓">✓</option>
+              </select>
+            </div>
+            {/* Difficulty group */}
+            <div className="inline-flex items-center gap-1 shrink-0">
+              <div className="text-[11px] text-white/60">Difficulty:</div>
+              <select
+                aria-label="AI difficulty"
+                className="px-2 h-8 text-sm rounded-lg bg-panel/80 border border-white/10 outline-none min-w-[110px]"
+                value={difficulty}
+                onChange={(e) => setDifficulty(e.target.value as Difficulty)}
+              >
+                <option value="easy">Easy</option>
+                <option value="medium">Medium</option>
+                <option value="hard">Hard</option>
+              </select>
+            </div>
+            <button className="btn-primary mt-1 sm:mt-0 shrink-0" onClick={reset}>Restart</button>
           </div>
         </div>
 
