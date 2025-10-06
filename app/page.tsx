@@ -14,6 +14,7 @@ export default function HomePage() {
   const [result, setResult] = useState<null | { winner: Mark | null; draw: boolean }>(null)
   const [showSignature, setShowSignature] = useState(false)
   const [difficulty, setDifficulty] = useState<Difficulty>('medium')
+  const [firstTurn, setFirstTurn] = useState<'you' | 'ai'>('you')
 
   const statusText = useMemo(() => {
     if (result?.draw) return 'Draw!'
@@ -28,12 +29,45 @@ export default function HomePage() {
     return null
   }, [])
 
+  const aiPlay = useCallback(async (currentBoard: TBoard) => {
+    try {
+      setBusy(true)
+      const res = await fetch('/api/move', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ board: currentBoard, aiMark, playerMark, difficulty }),
+      })
+      if (!res.ok) throw new Error('AI request failed')
+      const data = await res.json()
+      if (typeof data.move !== 'number') throw new Error('Invalid AI response')
+      const nb2 = applyMove(currentBoard, data.move, aiMark)
+      setBoard(nb2)
+      const r2 = checkEnd(nb2)
+      if (r2) {
+        setResult(r2)
+      } else {
+        setTurn(playerMark)
+      }
+    } catch (e) {
+      console.error(e)
+      setTurn(playerMark)
+    } finally {
+      setBusy(false)
+    }
+  }, [aiMark, playerMark, difficulty, checkEnd])
+
   const reset = useCallback(() => {
     setBoard(EMPTY_BOARD)
-    setTurn(playerMark)
-    setBusy(false)
     setResult(null)
-  }, [playerMark])
+    const startMark = firstTurn === 'you' ? playerMark : aiMark
+    setTurn(startMark)
+    setBusy(false)
+    // If AI starts, immediately make its move
+    if (firstTurn === 'ai') {
+      // Defer to next tick to ensure state is applied
+      setTimeout(() => aiPlay(EMPTY_BOARD), 0)
+    }
+  }, [firstTurn, playerMark, aiMark, aiPlay])
 
   const onChangePlayerMark = useCallback((m: Mark) => {
     // Prevent same marks; if conflict, swap the AI's mark to a different one
@@ -45,21 +79,24 @@ export default function HomePage() {
     setPlayerMark(m)
     // reset game when changing marks
     setBoard(EMPTY_BOARD)
-    setTurn(m)
     setResult(null)
-  }, [aiMark])
+    const startMark = firstTurn === 'you' ? m : (m === aiMark ? aiMark : aiMark)
+    setTurn(firstTurn === 'you' ? m : aiMark)
+    if (firstTurn === 'ai') setTimeout(() => aiPlay(EMPTY_BOARD), 0)
+  }, [aiMark, firstTurn, aiPlay])
 
   const onChangeAiMark = useCallback((m: Mark) => {
     const all: Mark[] = ['X', 'O', '✓']
     if (m === playerMark) {
       const newPlayer = all.find((x) => x !== m) || 'X'
       setPlayerMark(newPlayer)
-      setTurn(newPlayer)
     }
     setAiMark(m)
     setBoard(EMPTY_BOARD)
     setResult(null)
-  }, [playerMark])
+    setTurn(firstTurn === 'you' ? playerMark : m)
+    if (firstTurn === 'ai') setTimeout(() => aiPlay(EMPTY_BOARD), 0)
+  }, [playerMark, firstTurn, aiPlay])
 
   const handlePlayerMove = useCallback(async (i: number) => {
     if (turn !== playerMark || busy || result) return
@@ -178,6 +215,29 @@ export default function HomePage() {
                 <option value="easy">Easy</option>
                 <option value="medium">Medium</option>
                 <option value="hard">Hard</option>
+              </select>
+            </div>
+            {/* First Turn group */}
+            <div className="inline-flex items-center gap-1 shrink-0">
+              <div className="text-[11px] text-white/60">First turn:</div>
+              <select
+                aria-label="First turn"
+                className="px-2 h-8 text-sm rounded-lg bg-panel/80 border border-white/10 outline-none min-w-[96px]"
+                value={firstTurn}
+                onChange={(e) => {
+                  const v = e.target.value as 'you' | 'ai'
+                  setFirstTurn(v)
+                  // Start a fresh round immediately respecting the new starter
+                  setTimeout(() => {
+                    setBoard(EMPTY_BOARD)
+                    setResult(null)
+                    setTurn(v === 'you' ? playerMark : aiMark)
+                    if (v === 'ai') aiPlay(EMPTY_BOARD)
+                  }, 0)
+                }}
+              >
+                <option value="you">You</option>
+                <option value="ai">AI</option>
               </select>
             </div>
             <button className="btn-primary mt-1 sm:mt-0 shrink-0" onClick={reset}>Restart</button>
